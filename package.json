@@ -1,0 +1,27 @@
+{
+  "name": "processing-xml",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha ./test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enzofcna/processing-XML.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enzofcna/processing-XML/issues"
+  },
+  "homepage": "https://github.com/enzofcna/processing-XML#readme",
+  "dependencies": {
+    "chalk": "^5.2.0",
+    "pump": "^3.0.0"
+  }
+}
