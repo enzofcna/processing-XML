@@ -4,7 +4,7 @@ const {downloadZip,downloadXML} = require('../lib/download.js');
 const process = require('../lib/process.js');
 const XMLtoCSV = require('../');
 
-
+/**
 describe('Download', function () {
     it('should download a zip', async function () {
       const context = testUtils.context({
@@ -62,7 +62,7 @@ describe('Process', function () {
     }, config, false);
     await process(context.pluginConfig,context.processingConfig, context.tmpDir, context.axios, context.log);
   });
-  /**
+  */
   describe('Global', function () {
     it('should load data on the staging', async function () {
       this.timeout(100000)
@@ -72,15 +72,16 @@ describe('Process', function () {
         processingConfig: {
           datasetMode: 'create',
           dataset :{title : 'XMLtoCSV test'},
-          url: 'https://data-api.megalis.bretagne.bzh/api/v1/decp/222200016/2020'
+          url: 'https://data-api.megalis.bretagne.bzh/api/v1/decp/222200016/2020',
+          processType : '2020',
+          separateur : '-'
           
         },
         tmpDir: 'data/'
       }, config, false);
+      console.log(config)
       await XMLtoCSV.run(context);
     });
   });
-  */
 
 
-});
