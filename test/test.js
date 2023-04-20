@@ -1,40 +1,86 @@
-const assert = require('assert');
-const config = require('config');
+const config = require('../config/local-dev.js');
 const testUtils = require('@data-fair/processings-test-utils');
-const test = require('../lib/download.js');
-const axios = require('axios');
+const {downloadZip,downloadXML} = require('../lib/download.js');
+const process = require('../lib/process.js');
+const XMLtoCSV = require('../');
 
 
 describe('Download', function () {
     it('should download a zip', async function () {
-
-      const headers = { 'x-apiKey': config.dataFairAPIKey };
-
-      const axiosInstance = axios.create({
-        baseURL: config.dataFairUrl,
-        headers: headers,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity
-      });
-
-      // Customize axios errors for shorter stack traces when a request fails
-      axiosInstance.interceptors.response.use(response => response, error => {
-        if (!error.response) return Promise.reject(error);
-        delete error.response.request;
-        error.response.config = { method: error.response.config.method, url: error.response.config.url, data: error.response.config.data };
-        return Promise.reject(error.response);
-      });
-      const pluginConfig = { url: 'https://donnees.roulez-eco.fr/opendata/instantane', limit: 2500 };
-  
-      const log = {
-        step: (msg) => console.log(`[STEP] ${msg}`),
-        error: (msg, extra) => console.error(`[ERROR] ${msg}`, extra),
-        warning: (msg, extra) => console.warn(`[WARNING] ${msg}`, extra),
-        info: (msg, extra) => console.info(`[INFO] ${msg}`, extra),
-        debug: (msg, extra) => console.debug(`[DEBUG] ${msg}`, extra)
-      };
-      
-      var dir='data';
-      await test.downloadZip(pluginConfig,dir,axiosInstance,log);
+      const context = testUtils.context({
+        pluginConfig: {
+          
+        },
+        processingConfig: {
+          url: 'https://donnees.roulez-eco.fr/opendata/instantane'
+        },
+        tmpDir: 'data/'
+      }, config, false);
+      await downloadZip(context.processingConfig, context.tmpDir, context.axios, context.log);
     });
+    it('should download an XML file', async function () {
+      this.timeout(10000);
+
+      const context = testUtils.context({
+        pluginConfig: {
+        },
+        processingConfig: {
+          url: 'https://data-api.megalis.bretagne.bzh/api/v1/decp/222200016/2020',
+        },
+        tmpDir: 'data/'
+      }, config, false);
+      await downloadXML(context.processingConfig,context.tmpDir,context.axios,context.log);
+    });
+
+});
+
+describe('Process', function () {
+  it('should create a csv from an xml file', async function () {
+    const context = testUtils.context({
+      pluginConfig: {
+        
+      },
+      processingConfig: {
+        datasetMode: 'create',
+        url: 'https://data-api.megalis.bretagne.bzh/api/v1/decp/222200016/2020'
+      },
+      tmpDir: 'data/'
+    }, config, false);
+    await process(context.pluginConfig,context.processingConfig, context.tmpDir, context.axios, context.log);
+  });
+  
+  it('should create a csv from an xml file', async function () {
+    const context = testUtils.context({
+      pluginConfig: {
+        
+      },
+      processingConfig: {
+        datasetMode: 'create',
+        url: 'https://donnees.roulez-eco.fr/opendata/PrixCarburants_instantane'
+      },
+      tmpDir: 'data/'
+    }, config, false);
+    await process(context.pluginConfig,context.processingConfig, context.tmpDir, context.axios, context.log);
+  });
+  /**
+  describe('Global', function () {
+    it('should load data on the staging', async function () {
+      this.timeout(100000)
+      const context = testUtils.context({
+        pluginConfig: {
+        },
+        processingConfig: {
+          datasetMode: 'create',
+          dataset :{title : 'XMLtoCSV test'},
+          url: 'https://data-api.megalis.bretagne.bzh/api/v1/decp/222200016/2020'
+          
+        },
+        tmpDir: 'data/'
+      }, config, false);
+      await XMLtoCSV.run(context);
+    });
+  });
+  */
+
+
 });
